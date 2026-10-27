@@ -1,3 +1,4 @@
+
 FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y \
@@ -11,20 +12,17 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-COPY composer.json composer.lock ./
+COPY . .
+
 RUN COMPOSER_ALLOW_SUPERUSER=1 composer install \
     --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci && npm run build
 
-COPY . .
-
-RUN npm run build \
-    && mkdir -p storage/framework/cache/data \
-       storage/framework/sessions \
-       storage/framework/views \
-       storage/logs bootstrap/cache \
+RUN mkdir -p storage/framework/cache/data \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 RUN COMPOSER_ALLOW_SUPERUSER=1 composer dump-autoload --optimize
@@ -32,3 +30,4 @@ RUN COMPOSER_ALLOW_SUPERUSER=1 composer dump-autoload --optimize
 ENV PORT=8080
 
 CMD ["sh", "-c", "php artisan config:clear && php artisan route:clear && php artisan view:clear && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"]
+
