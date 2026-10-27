@@ -1,6 +1,5 @@
-
+# Trigger deployment baru di Wasmer
 FROM php:8.4-cli
-
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev libpng-dev libjpeg62-turbo-dev libfreetype6-dev \
     libonig-dev libxml2-dev curl nodejs npm \
